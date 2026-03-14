@@ -10,7 +10,7 @@
 
 # Test Port ROM: OnePlus 12 (ColorOS_14.0.0.810), OnePlus ACE3V(ColorOS_14.0.1.621) Realme GT Neo5 240W(RMX3708_14.0.0.800)
 
-build_user="Bruce Teng"
+build_user="Bruce Teng,Co-Create team"
 build_host=$(hostname)
 
 # 底包和移植包为外部参数传入
@@ -1240,9 +1240,9 @@ cp -rf build/baserom/images/my_product/etc/fusionlight_profile/*  build/portrom/
 sed -i "/persist.vendor.display.pxlw.iris_feature=.*/d" build/portrom/images/my_product/etc/bruce/build.prop
 
 if grep -q "ro.build.version.oplusrom.display" build/portrom/images/my_manifest/build.prop;then
-    sed -i '/^ro.build.version.oplusrom.display=/ s/$/ | Ported By 🅱🆃/' build/portrom/images/my_manifest/build.prop
+    sed -i '/^ro.build.version.oplusrom.display=/ s/$/ ❤️ Port By Co-Create Team /' build/portrom/images/my_manifest/build.prop
 else
-    sed -i '/^ro.build.version.oplusrom.display=/ s/$/ | Ported By 🅱🆃/' build/portrom/images/my_product/etc/bruce/build.prop
+    sed -i '/^ro.build.version.oplusrom.display=/ s/$/ ❤️ Port By Co-Create Team /' build/portrom/images/my_product/etc/bruce/build.prop
 fi
 
 propfile="build/portrom/images/my_product/etc/bruce/build.prop"
