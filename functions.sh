@@ -981,3 +981,103 @@ get_oplusrom_version() {
 
 trap 'error "强制中断脚本运行，以免误删重要文件！" "Script interrupted! Exiting to prevent accidental deletion." ; exit 1' SIGINT
 
+# Configuration for downloading resources from GitHub Release  
+export REPO_OWNER="${REPO_OWNER:-toraidl}"
+export REPO_NAME="${REPO_NAME:-coloros_port}"
+export RELEASE_TAG="${RELEASE_TAG:-assets}"
+# =========================================
+
+# Check if GitHub CLI is installed
+check_gh_cli() {
+    if ! command -v gh &> /dev/null; then
+        error "未找到 GitHub CLI (gh)。" "GitHub CLI (gh) not found."
+        return 1
+    fi
+    return 0
+}
+
+# Generate asset name for GitHub Release (based on upload_assets.sh logic)
+generate_asset_name() {
+    local file_path="$1"
+    local dir_path=$(dirname "$file_path")
+    local filename=$(basename "$file_path")
+    local asset_name=""
+
+    # Match the naming logic in upload_assets.sh
+    if [[ "$dir_path" == *"devices/"* ]]; then
+        # Extract first level directory name under devices/ as prefix
+        local prefix=$(echo "$dir_path" | sed 's/.*devices\///' | cut -d'/' -f1)
+        asset_name="${prefix}_${filename}"
+    elif [[ "$dir_path" == *"assets"* ]]; then
+        asset_name="assets_${filename}"
+    else
+        asset_name="$filename"
+    fi
+    
+    echo "$asset_name"
+}
+
+# Download specified asset from GitHub Release
+download_from_release() {
+    local file_path="$1"
+    
+    if [[ ! -f "$file_path" ]]; then
+        local asset_name=$(generate_asset_name "$file_path")
+        local download_url="https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/download/${RELEASE_TAG}/${asset_name}"
+        
+        blue "尝试从 GitHub Release 下载: $file_path" "Attempting download from GitHub Release: $file_path"
+        blue "     GitHub Asset Name: $asset_name" "GitHub Asset Name: $asset_name"
+        blue "     Download URL: $download_url" "Download URL: $download_url"
+        
+        # Try using GitHub CLI first
+        if check_gh_cli; then
+            mkdir -p "$(dirname "$file_path")"
+            if gh release download "$RELEASE_TAG" --repo "$REPO_OWNER/$REPO_NAME" --pattern "$asset_name" --dir "$(dirname "$file_path")" 2>/dev/null; then
+                local downloaded_file=$(find "$(dirname "$file_path")" -name "$asset_name" -type f)
+                if [[ -n "$downloaded_file" && "$downloaded_file" != "$file_path" ]]; then
+                    mv "$downloaded_file" "$file_path"
+                fi
+                if [[ -f "$file_path" ]]; then
+                    blue "通过 GitHub CLI 成功下载: $file_path" "Successfully downloaded via GitHub CLI: $file_path"
+                    return 0
+                fi
+            fi
+            yellow "GitHub CLI 下载失败，尝试直接下载..." "GitHub CLI download failed, trying direct download..."
+        fi
+        
+        # If GitHub CLI unavailable or fails, use curl for direct download
+        mkdir -p "$(dirname "$file_path")"
+        if curl -L --fail -o "$file_path.tmp" "$download_url"; then
+            mv "$file_path.tmp" "$file_path"
+            blue "直接下载成功: $file_path" "Direct download successful: $file_path"
+            return 0
+        else
+            rm -f "$file_path.tmp"
+            error "下载失败: $file_path (URL: $download_url)" "Download failed: $file_path (URL: $download_url)"
+            return 1
+        fi
+    else
+        green "文件已存在，跳过下载: $file_path" "File already exists, skipping download: $file_path"
+    fi
+}
+
+# Quick check function to download file if it's missing from GitHub Release (only when not exists locally)
+ensure_resource_available() {
+    local resource_path="$1"
+    
+    if [[ ! -f "$resource_path" ]]; then
+        yellow "本地缺失资源: $resource_path，正在尝试下载..." "Resource missing locally: $resource_path, attempting download..."
+        # Try downloading from GitHub Release 
+        if download_from_release "$resource_path"; then
+            return 0  # Download successful
+        else
+            error "错误: 无法获取所需资源 $resource_path" "Error: Could not acquire required resource $resource_path"
+            error "请手动放置文件或上传到 GitHub Release" "Please place file manually or upload to GitHub Release"
+            return 1
+        fi
+    else
+        green "资源已存在: $resource_path" "Resource exists: $resource_path"
+        return 0  # Already exists
+    fi
+}
+
