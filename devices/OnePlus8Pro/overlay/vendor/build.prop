@@ -211,19 +211,26 @@ ro.oplus.version.base=00.4.00414003.2024081416592926753835
 ro.oplus.image.base.version=00.4.00414003.2024081416592926753835
 # DONOT_GENERATE_FEC is 
 ro.oplus.image.vendor.version=.6e1ebb47
-# Camera Video Recording Fix for ColorOS 16
-media.settings.use_codec2=true
-debug.stagefright.c2inputsurface=-1
-ro.media.recorder-force-base-profile=1
-persist.vendor.camera.compat_mode=1
+
+# Disable advanced camera features not supported on 8P
 persist.vendor.camera.eis.disable=1
 persist.vendor.camera.hdr.video.disable=1
-debug.camera.log=2
+persist.vendor.camera.ai.isp.disable=1
+persist.vendor.camera.dual.video.disable=1
 
-# Codec2 Configuration
-vendor.camera.qcom.camera.count=1
-vendor.camera.aux.packagelist=org.codeaurora.snapcam,com.android.camera
-vendor.camera.aux.procamera=true
+# Force compatibility mode
+persist.vendor.camera.compat_mode=1
+persist.vendor.camera.HAL3.enabled=1
+
+# Codec2 Configuration - Force legacy path
+media.settings.use_codec2=false
+debug.stagefright.c2inputsurface=-1
+debug.stagefright.omx_usage=1
+ro.media.recorder-force-base-profile=1
+
+# Disable new Codec2 features
+persist.sys.media.codec2.disable=0
+debug.codecs.disable_omx=false
 
 # Media Encoder Configuration
 media.stagefright.enable-player=true
@@ -231,3 +238,33 @@ media.stagefright.enable-meta=true
 media.stagefright.enable-scan=true
 media.stagefright.enable-http=true
 media.stagefright.enable-rtsp=true
+media.stagefright.use-timed-text=false
+
+# Force software encoding as fallback
+persist.sys.media.use_swcodec=0
+
+# Video recording limits - 1080p30 max
+ro.media.enc.hprof.coder=avc
+ro.media.enc.hprof.fps=30
+ro.media.enc.hprof.quality=80
+ro.media.enc.hprof.width=1920
+ro.media.enc.hprof.height=1080
+ro.media.enc.lprof.coder=avc
+ro.media.enc.lprof.fps=30
+ro.media.enc.lprof.width=1280
+ro.media.enc.lprof.height=720
+
+# Disable camera gallery provider (causes errors)
+persist.vendor.camera.gallery.disable=1
+
+# HAL Configuration
+vendor.camera.aux.packagelist=org.codeaurora.snapcam,com.android.camera,com.oneplus.camera
+vendor.camera.aux.procamera=true
+vendor.camera.hal.version=3.6
+
+# Disable URCC HAL (not found errors)
+persist.vendor.camera.urcc.disable=1
+
+# Additional compatibility flags
+ro.camera.notify_nfc=0
+ro.camera.disable_concurrent_mode=1
