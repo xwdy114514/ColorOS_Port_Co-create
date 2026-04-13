@@ -211,3 +211,23 @@ ro.oplus.version.base=00.4.00414003.2024081416592926753835
 ro.oplus.image.base.version=00.4.00414003.2024081416592926753835
 # DONOT_GENERATE_FEC is 
 ro.oplus.image.vendor.version=.6e1ebb47
+# Camera Video Recording Fix for ColorOS 16
+media.settings.use_codec2=true
+debug.stagefright.c2inputsurface=-1
+ro.media.recorder-force-base-profile=1
+persist.vendor.camera.compat_mode=1
+persist.vendor.camera.eis.disable=1
+persist.vendor.camera.hdr.video.disable=1
+debug.camera.log=2
+
+# Codec2 Configuration
+vendor.camera.qcom.camera.count=1
+vendor.camera.aux.packagelist=org.codeaurora.snapcam,com.android.camera
+vendor.camera.aux.procamera=true
+
+# Media Encoder Configuration
+media.stagefright.enable-player=true
+media.stagefright.enable-meta=true
+media.stagefright.enable-scan=true
+media.stagefright.enable-http=true
+media.stagefright.enable-rtsp=true
