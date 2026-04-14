@@ -253,18 +253,40 @@ ro.media.enc.lprof.coder=avc
 ro.media.enc.lprof.fps=30
 ro.media.enc.lprof.width=1280
 ro.media.enc.lprof.height=720
+# ==========================================
+# OnePlus 8 Pro Camera Ultimate Fix
+# ==========================================
 
-# Disable camera gallery provider (causes errors)
-persist.vendor.camera.gallery.disable=1
+# --- 禁用 URCC 服务 ---
+persist.vendor.camera.urcc.disable=1
+persist.vendor.camera.urcc.supported=0
+ro.vendor.camera.urcc.available=false
 
-# HAL Configuration
-vendor.camera.aux.packagelist=org.codeaurora.snapcam,com.android.camera,com.oneplus.camera
-vendor.camera.aux.procamera=true
+# --- 禁用高级功能 ---
+persist.vendor.camera.eis.disable=1
+persist.vendor.camera.hdr.video.disable=1
+persist.vendor.camera.ai.scene.disable=1
+persist.vendor.camera.ai.isp.disable=1
+persist.vendor.camera.dual.video.disable=1
+persist.vendor.camera.ozo.audio.disable=1
+
+# --- 兼容模式 ---
+persist.vendor.camera.compat_mode=1
+persist.vendor.camera.HAL3.enabled=1
 vendor.camera.hal.version=3.6
 
-# Disable URCC HAL (not found errors)
-persist.vendor.camera.urcc.disable=1
+# --- 视频流配置 ---
+ro.media.enc.hprof.width=1920
+ro.media.enc.hprof.height=1080
+ro.media.enc.hprof.fps=30
+ro.media.enc.hprof.coder=avc
+ro.media.enc.lprof.width=1280
+ro.media.enc.lprof.height=720
+ro.media.enc.lprof.fps=30
+ro.media.enc.lprof.coder=avc
 
-# Additional compatibility flags
-ro.camera.notify_nfc=0
+# --- 辅助功能 ---
 ro.camera.disable_concurrent_mode=1
+ro.camera.notify_nfc=0
+persist.vendor.camera.gallery.disable=1
+persist.vendor.camera.debug.log_level=0
